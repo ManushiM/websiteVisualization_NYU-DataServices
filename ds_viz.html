@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<title>NYU-DS GIS Tools</title>
 <style>
 
 .node {
-  font: 500 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 500 11px "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   
 }
 
@@ -56,7 +57,7 @@ body {
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var diameter = 660,
+var diameter = 690,
     radius = diameter / 2,
     innerRadius = radius - 120;
 
@@ -74,16 +75,16 @@ var line = d3.svg.line.radial()
     .angle(function(d) { console.log(d); return d.x / 180 * Math.PI; });
 
 var svg = d3.select("body").append("svg")
-    .attr("width", diameter+180)
-    .attr("height", diameter+30)
+    .attr("width", diameter+190)
+    .attr("height", diameter+90)
     .append("g")
     .attr("transform", "translate(" + radius + "," + radius + ")");
 
 var link = svg.append("g").selectAll(".link"),
     node = svg.append("g").selectAll(".node");
+    difficulty = svg.append("g").selectAll(".node");
 
 d3.json("createdData.json", function(error, classes) {
-//d3.json("createdData.json", function(error, classes) {
   if (error) throw error;
 
   var nodes = cluster.nodes(packageHierarchy(classes)),
@@ -107,7 +108,7 @@ d3.json("createdData.json", function(error, classes) {
      /* .text(function(d) { console.out(d.key) })*/
       .on("mouseover", mouseovered)
       .on("mouseout", mouseouted)
-      .style("fill", function(d) { var s = d.name; if(s.includes("flare.desktop.")){return "darkmagenta";}else if(s.includes("flare.web.")){return "blue";}else if(s.includes("flare.procurement.")){return "firebrick";}else if(s.includes("flare.machine.")){return "darkorange";}else if(s.includes("flare.access.")){return "teal";}else if(s.includes("flare.functionality.")){return "deeppink";}else{return "black";}});
+      .style("fill", function(d) { var s = d.name; if(s.includes("flare.desktop.")){return "darkmagenta";}else if(s.includes("flare.web.")){return "blue";}else if(s.includes("flare.procurement.")){return "darkred";}else if(s.includes("flare.machine.")){return "darkorange";}else if(s.includes("flare.access.")){return "teal";}else if(s.includes("flare.functionality.")){return "deeppink";}else if(s.includes("flare.database.")){return "darkgoldenrod";}else{return "black";}});
 });
 
 function mouseovered(d) {
