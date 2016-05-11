@@ -1,0 +1,21 @@
+[
+{"name":"flare.desktop.ArcGIS","imports":[],"x":45,"y":60},
+{"name":"flare.desktop.QGIS","imports":[],"x":145,"y":20},
+{"name":"flare.desktop.City Engine","imports":[]},
+{"name":"flare.desktop.ERDAS Imagine","imports":[]},
+{"name":"flare.web.ArcGIS Online","imports":[]},
+{"name":"flare.web.StoryMaps","imports":[]},
+{"name":"flare.web.CartoDB","imports":[]},
+{"name":"flare.web.Google Earth","imports":[]},
+{"name":"flare.web.ArcGIS Earth","imports":[]},
+{"name":"flare.web.Google Fusion Tables","imports":[]},
+{"name":"flare.procurement.Proprietary","imports":[]},
+{"name":"flare.procurement.Open Source","imports":["flare.desktop.QGIS","flare.web.StoryMaps","flare.web.CartoDB"]},
+{"name":"flare.procurement.Proprietary but Free for NYU community","imports":["flare.desktop.ArcGIS","flare.web.ArcGIS Online"]},
+{"name":"flare.functionality.Time Series","imports":["flare.desktop.ArcGIS"]},
+{"name":"flare.access.Personal","imports":["flare.desktop.ArcGIS"]},
+{"name":"flare.machine.PC","imports":["flare.desktop.ArcGIS","flare.desktop.QGIS","flare.desktop.City Engine","flare.desktop.ERDAS Imagine"]},
+{"name":"flare.machine.Pc and Mac","imports":["flare.desktop.QGIS"]},
+{"name":"flare.machine.Web Based","imports":["flare.web.ArcGIS Online","flare.web.StoryMaps","flare.web.CartoDB","flare.web.Google Earth", "flare.web.ArcGIS Earth", "flare.web.Google Fusion Tables"]}
+
+]

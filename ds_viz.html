@@ -3,8 +3,8 @@
 <style>
 
 .node {
-  font: 300 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
-  fill: grey;
+  font: 500 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  
 }
 
 .node:hover {
@@ -21,7 +21,7 @@
 .node:hover,
 .node--source,
 .node--target {
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .node--source {
@@ -45,13 +45,18 @@
 .link--target {
   stroke: #2ca02c;
 }
+    
+body {
+  margin: auto;
+  text-align: center;
+}
 
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var diameter = 960,
+var diameter = 660,
     radius = diameter / 2,
     innerRadius = radius - 120;
 
@@ -69,15 +74,15 @@ var line = d3.svg.line.radial()
     .angle(function(d) { console.log(d); return d.x / 180 * Math.PI; });
 
 var svg = d3.select("body").append("svg")
-    .attr("width", diameter)
-    .attr("height", diameter)
+    .attr("width", diameter+180)
+    .attr("height", diameter+30)
     .append("g")
     .attr("transform", "translate(" + radius + "," + radius + ")");
 
 var link = svg.append("g").selectAll(".link"),
     node = svg.append("g").selectAll(".node");
 
-d3.json("givenData.json", function(error, classes) {
+d3.json("createdData.json", function(error, classes) {
 //d3.json("createdData.json", function(error, classes) {
   if (error) throw error;
 
@@ -98,9 +103,11 @@ d3.json("givenData.json", function(error, classes) {
       .attr("dy", ".31em")
       .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + (d.y + 8) + ",0)" + (d.x < 180 ? "" : "rotate(180)"); })
       .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
-      .text(function(d) { return d.key; })
+      .text(function(d) {  return d.key; })
+     /* .text(function(d) { console.out(d.key) })*/
       .on("mouseover", mouseovered)
-      .on("mouseout", mouseouted);
+      .on("mouseout", mouseouted)
+      .style("fill", function(d) { var s = d.name; if(s.includes("flare.desktop.")){return "darkmagenta";}else if(s.includes("flare.web.")){return "blue";}else if(s.includes("flare.procurement.")){return "firebrick";}else if(s.includes("flare.machine.")){return "darkorange";}else if(s.includes("flare.access.")){return "teal";}else if(s.includes("flare.functionality.")){return "deeppink";}else{return "black";}});
 });
 
 function mouseovered(d) {
