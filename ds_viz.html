@@ -84,7 +84,7 @@ var link = svg.append("g").selectAll(".link"),
     node = svg.append("g").selectAll(".node");
     difficulty = svg.append("g").selectAll(".node");
 
-d3.json("createdData.json", function(error, classes) {
+d3.json("https://raw.githubusercontent.com/ManushiM/websiteVisualization_NYU-DataServices/master/createdData.json", function(error, classes) {
   if (error) throw error;
 
   var nodes = cluster.nodes(packageHierarchy(classes)),
