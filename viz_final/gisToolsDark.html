@@ -1000,57 +1000,53 @@ function getToolColor(category, value){
     var color = '#ccc'
     console.log(category);
     if(category == 'Desktop GIS'){
-       /* if( value <= 1){
-            color = '#8B9BD9';
+        if( value <= 1){
+            color = '#ffd699';
         } else if( value > 1 && value <= 2){
-            color = '#5265AE';
-        } else if( value > 2 && value <= 3){
-            color = '#394B9F';
-        } else if( value > 3 && value <= 4){
-            color = '#2C3878';
-        } else if( value > 4 ){
-            color = '#162252';
-        }*/
-        color = '#ffb366';
-    } else if(category == 'Web-mapping tool'){
-        /*if( value <= 1){
-            color = '#df80ff';
-        } else if( value > 1 && value <= 2){
-            color = '#c61aff';
-        } else if( value > 2 && value <= 3){
-            color = '#730099';
-        } else if( value > 3 && value <= 4){
-            color = '#660066';
-        } else if( value > 4 ){
-            color = '#330033';
-        }*/
-        color = '#3366ff';
-    } else if(category == 'Database with mapping functionality'){
-        /*if( value <= 1){
             color = '#ffb366';
-        } else if( value > 1 && value <= 2){
-            color = '#ff944d';
         } else if( value > 2 && value <= 3){
-            color = '#ff6600';
+            color = '#ff9933';
         } else if( value > 3 && value <= 4){
-            color = '#ff3300';
+            color = '#ff8000';
         } else if( value > 4 ){
-            color = '#b32400';
-        }*/
-        color = '#993366';
+            color = '#cc6600';
+        }
+    } else if(category == 'Web-mapping tool'){
+        if( value <= 1){
+            color = '#809fff';
+        } else if( value > 1 && value <= 2){
+            color = '#668cff';
+        } else if( value > 2 && value <= 3){
+            color = '#3366ff';
+        } else if( value > 3 && value <= 4){
+            color = '#0040ff';
+        } else if( value > 4 ){
+            color = '#002699';
+        }
+    } else if(category == 'Database with mapping functionality'){
+        if( value <= 1){
+            color = '#e6b3cc';
+        } else if( value > 1 && value <= 2){
+            color = '#d279a6';
+        } else if( value > 2 && value <= 3){
+            color = '#bf4080';
+        } else if( value > 3 && value <= 4){
+            color = '#993366';
+        } else if( value > 4 ){
+            color = '#602040';
+        }
     } else if(category == 'Application / Library / Visualization tool'){
-        /*if( value <= 1){
-            color = '#ffb3cc';
+        if( value <= 1){
+            color = '#9fdfbf';
         } else if( value > 1 && value <= 2){
-            color = '#ff80aa';
+            color = '#66cc99';
         } else if( value > 2 && value <= 3){
-            color = '#ff3377';
+            color = '#339966';
         } else if( value > 3 && value <= 4){
-            color = '#ff0055';
+            color = '#26734d';
         } else if( value > 4 ){
-            color = '#99004d';
-        }*/
-        color = '#339966';
+            color = '#194d33';
+        }
     }
     return color;
 }
