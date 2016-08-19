@@ -99,23 +99,7 @@ var diameter = 640,
 
 var cluster = d3.layout.cluster()
     .size([360, innerRadius])
-	.sort(function(a, b) {
-        if(a.nodeType == 'tool'){
-            var valueA = a.appear;
-		    var valueB = b.appear;
-        } else{
-        var valueA = a.appear * 100;
-		var valueB = b.appear * 100;
-		var charA = a.name.toLowerCase().charCodeAt(0);
-		var charB = b.name.toLowerCase().charCodeAt(0);
-        }
-
-		if(a.nodeType == 'tool'){
-            return d3.descending(valueA, valueB);
-		} else {
-			return d3.descending(valueB - charB, valueA - charA);
-		}
-	})
+	.sort(null)
     .value(function(d) { return d.appear; });
 
 var bundle = d3.layout.bundle();
@@ -551,8 +535,8 @@ function color(val){
 function drawChart(){
 
 	var barScale = d3.scale.linear()
-	    .domain([0,10])
-	    .range([0,50]);
+	    .domain([10,10])
+	    .range([20,50]);
 
 	var gameBarScale = d3.scale.linear()
 	    .domain([0,maxCharAppear])
@@ -621,21 +605,21 @@ function drawChart(){
 
 				return bClass;
 	      })
-		  .style('fill', function(d){
+		  .style('fill', function(d){ //this is here it shows
 		  			if(d.nodeType == 'tool'){
                         if(d.category == 'Desktop GIS'){
-					       return '#5265AE';
+					       return '#ffb366';
 				        } else if(d.category == 'Web-mapping tool'){
-					       return '#660066';
+					       return '#3366ff';
                         } else if(d.category == 'Database with mapping functionality'){
-					       return '#FF6600';
+					       return '#993366';
                         }  else if(d.category == 'Application / Library / Visualization tool'){
-					       return '#FF0066';
+					       return '#339966';
                     }
 					} else if(d.nodeType == 'functionality' ) {
-						return '#3C602E';
+						return '#d9d9d9';
 					} else if( d.nodeType == 'machine'){
-						return '#CC2F27';
+						return '#ffffcc';
 					}
 		  	   })
 	      .on("mouseover", showConnections)
@@ -671,7 +655,7 @@ function drawChart(){
 			linkClass += ' barlink-' + gLink['className'] + oLink['className']
 
 			linkClass += ' barlink-' + node['toolSupport']
-
+            
 			return linkClass;
 		})
 		.attr("id", function(d){
@@ -958,21 +942,10 @@ function showConnections(d) {
 		$.each(seasons, function(i, s){
 			$("#listTemplate").tmpl( {item: s}).appendTo( "#node-season-references .node-data" );
 		})
-	} else if(d.nodeType == 'functionality' ){
-		$("#allegianceTemplate").tmpl( {
-			name: d.name,
-			color: getColor(d.nodeType, d.appear),
-			count: d.numChars
-		}).appendTo( "#node-info" );
-	} else if( d.nodeType == 'machine'){
-		$("#deathTemplate").tmpl( {
-			//name: (d.name.toLowerCase().search('use') >= 0)? 'the ' + d.name.toLowerCase() : d.name.toLowerCase(),
-			name: (d.name.toLowerCase() == 'other')? 'wild board attack, throat slit or burned ' : d.name.toLowerCase(),
-			color: getColor(d.nodeType, d.appear),
-			count: (d.numChars > 1) ? d.numChars	+ ' major characters are': d.numChars	+ ' major character is'
-		}).appendTo( "#node-info" );
-	}
-	$("#node-info").show();
+	    $("#node-info").show();
+    }else{
+        $("#node-info").hide();
+    }
 }
 
 function hideConnections(d) {
@@ -1027,7 +1000,7 @@ function getToolColor(category, value){
     var color = '#ccc'
     console.log(category);
     if(category == 'Desktop GIS'){
-        if( value <= 1){
+       /* if( value <= 1){
             color = '#8B9BD9';
         } else if( value > 1 && value <= 2){
             color = '#5265AE';
@@ -1037,9 +1010,10 @@ function getToolColor(category, value){
             color = '#2C3878';
         } else if( value > 4 ){
             color = '#162252';
-        }
+        }*/
+        color = '#ffb366';
     } else if(category == 'Web-mapping tool'){
-        if( value <= 1){
+        /*if( value <= 1){
             color = '#df80ff';
         } else if( value > 1 && value <= 2){
             color = '#c61aff';
@@ -1049,9 +1023,10 @@ function getToolColor(category, value){
             color = '#660066';
         } else if( value > 4 ){
             color = '#330033';
-        }
+        }*/
+        color = '#3366ff';
     } else if(category == 'Database with mapping functionality'){
-        if( value <= 1){
+        /*if( value <= 1){
             color = '#ffb366';
         } else if( value > 1 && value <= 2){
             color = '#ff944d';
@@ -1061,9 +1036,10 @@ function getToolColor(category, value){
             color = '#ff3300';
         } else if( value > 4 ){
             color = '#b32400';
-        }
+        }*/
+        color = '#993366';
     } else if(category == 'Application / Library / Visualization tool'){
-        if( value <= 1){
+        /*if( value <= 1){
             color = '#ffb3cc';
         } else if( value > 1 && value <= 2){
             color = '#ff80aa';
@@ -1073,7 +1049,8 @@ function getToolColor(category, value){
             color = '#ff0055';
         } else if( value > 4 ){
             color = '#99004d';
-        }
+        }*/
+        color = '#339966';
     }
     return color;
 }
@@ -1082,6 +1059,7 @@ function getToolColor(category, value){
 function getColor(type, value){
 	var color = '#ccc'
     if(type == 'functionality'){
+        /*
 		if( value <= 1){
 			color = '#9DB270';
 		} else if( value > 1 && value <= 5){
@@ -1092,15 +1070,17 @@ function getColor(type, value){
 			color = '#1E3B13';
 		} else if( value > 15 ){
 			color = '#2F4F2F';
-		}
+		}*/
+        color = '#d9d9d9';
 	} else if(type == 'machine'){
-		if( value <= 1){
+		/*if( value <= 1){
 			color = '#E88B78';
 		} else if( value == 2){
 			color = '#CC2F27';
 		} else if( value > 2){
 			color = '#871D1B';
-		}
+		}*/
+        color = '#ffffcc';
 	}
 	return color;
 }
