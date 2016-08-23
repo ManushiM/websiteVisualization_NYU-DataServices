@@ -4,18 +4,15 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title> NYU DS GIS Tools</title>
 
-<!--	<link rel="stylesheet" type="text/css" href="http://thronesviz.github.io/css/pasteup.min.css">-->
-	
-
 	<script type="text/javascript" src="http://ff.kis.scr.kaspersky-labs.com/1B74BD89-2A22-4B93-B451-1C9E1052A0EC/main.js" charset="UTF-8"></script><script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="jquery.tmpl.min.js"></script>
     <link rel="stylesheet" type="text/css" href="main.css">
-	<script id="charTemplate" type="text/x-jquery-tmpl">
-		<div id='node-name'>${name}</div>
+	<script id="toolDetails" type="text/x-jquery-tmpl">
+		<div id='node-name' tabindex="0">${name}</div>
 
 		<div class='node-char' id='node-image-references'>
-			<img src="${imagesrc}" alt="thrones" width="50" height="50">
+			<img src="${imagesrc}" alt="Not Available" width="50" height="50">
 		</div>
 		<div class='node-char' id='node-char-appearance'>
 			<div class='node-label'>Data Services Support</div>
@@ -26,7 +23,7 @@
 			<div class='node-label'>Tool Type</div>
 			<div class='node-data'>${category}</div>
 		</div>
-		<div class='node-char' id='node-season-references'>
+		<div class='node-char' id='node-access-references'>
 			<div class='node-label'>Access at NYU</div>
 			<div class='node-data'></div>
 		</div>
@@ -39,35 +36,21 @@
 			<div class='node-data'>${learningCurve}</div>
 		</div>
         <div class='node-char' id='node-outlinks'>
-            <a class="link" href="https://qgis.org" style="font-size: 11px; float: left">Website</a>
-            <a class="link" href="https://qgis.org" style="font-size: 11px; float: right">Get Help</a>
+            <a class="link" target="_blank" href="${website}" style="font-size: 11px; float: left">Website</a>
+            <a class="link" target="_blank" href="http://guides.nyu.edu/appointment" style="font-size: 11px; float: right">Get Help</a>
             <br>
-            <a class="link" href="https://qgis.org" style="font-size: 11px; float: left">Training Resources</a>
-            <a class="link" href="https://qgis.org" style="font-size: 11px; float: right">Example</a>
+            <a class="link" target="_blank" href="${training}" style="font-size: 11px; float: left">Training Resources</a>
+            <a class="link" target="_blank" href="${examples}" style="font-size: 11px; float: right">Example</a>
 			
 		</div>
 		<div class='node-char' id='node-fileTypes'>
-			<a class="link" href="https://qgis.org" style="font-size: 11px; float: center">Supported File Types</a>
+			<a class="link" href="${fileTypes}" style="font-size: 11px; float: center">Supported File Types</a>
 		</div>
       
         
 	</script>
-	<!--<script id="deathTemplate" type="text/x-jquery-tmpl">
-		<div class='node-char-tags' id='node-tags'>
-			<div class='node-data-color' style='background-color: ${color};'></div>
-			<div class='node-data-wide'>${count} killed by ${name}</div>
-		</div>
-<a class="linkTest" href="https://qgis.org" target="_blank">TestLink</a>
-	</script>
--->
-	<!--<script id="allegianceTemplate" type="text/x-jquery-tmpl">
-		<div class='node-char-tags' id='node-tags'>
-			<div class='node-data-color' style='background-color: ${color};'></div>
-			<div class='node-data-wide'>${count} characters are in allegiance with ${name}</div>
-		</div>
-	</script>-->
 
-	<script id="listTemplate" type="text/x-jquery-tmpl">
+    <script id="listTemplate" type="text/x-jquery-tmpl">
 		<div class='node-list-item'>${item}</div>
 	</script>
 </head>
@@ -76,12 +59,12 @@
 <div class='wrap'>
 	<div class='row' id='circle-chart-container'>
 
-		<div class='col-12' id='got-network'></div>
+		<div class='col-12' id='gis-network'></div>
 	</div>
 
 </div>
 
-<div id='node-info' class='got-popup'></div>
+<div id='node-info' class='gis-popup'></div>
 
 <script>
 var map = {
@@ -89,8 +72,8 @@ var map = {
 	 "children": []
 };
 
-var chardeath_links = [],
-	charhouse_links = [];
+var toolMachine_links = [],
+	toolFunctionality_links = [];
 
 var diameter = 640,
     radius = 940 / 2,
@@ -104,7 +87,7 @@ var cluster = d3.layout.cluster()
 
 var bundle = d3.layout.bundle();
 
-var svg = d3.select("#got-network").append("svg")
+var svg = d3.select("#gis-network").append("svg")
     .attr("width", circle)
     .attr("height", diameter+240)
   .append("g")
@@ -119,7 +102,7 @@ var line = d3.svg.line.radial()
     .angle(function(d) { return d.x / 180 * Math.PI; });
 
 // Cleaned GIS tools Data
-var dataSource = 'gis_characters.csv';  
+var dataSource = 'gis_dsTools.csv';  
 
 var maxCharToDeath = 0,
 	maxDeathToChars = 0,
@@ -128,7 +111,7 @@ var maxCharToDeath = 0,
 	maxCharDeath = 0,
 	maxCharAppear = 0,
 	minCharAppear = undefined,
-	totalTools = 33;  // Number of tools. Always update it in case of changes, else it won't show on the viz
+	totalTools = 30;  // Number of tools. Always update it in case of changes, else it won't show on the viz
 
 var gradientCounter = 0,
 	toolSupport = {},
@@ -140,22 +123,22 @@ var gradientCounter = 0,
 // Main data processing
 d3.csv(dataSource, function (error, rows) {
 	data = rows;
-	processThrones(data);
+	processTools(data);
 });
 
 // Main function
-function processThrones(data){
+function processTools(data){
     
 
-	var charRootNode = {
+	var toolRootNode = {
 		name: 'tools',
 		children: []
 	}
-	var deathRootNode = {
+	var machineRootNode = {
 		name: 'tools',
 		children: []
 	}
-	var houseRootNode = {
+	var functionalityRootNode = {
 		name: 'tools',
 		children: []
 	}
@@ -183,28 +166,24 @@ function processThrones(data){
 			image: data[d]['image'],
 			connectedNodes: [],
 			toolSupport: data[d]['support'],
-			seasons: data[d]['season'].split(','),
+			access: data[d]['access'].split(','),
 			deathLink: '',
 			learningCurve: data[d]['learningCurve'],
             website: data[d]['website'],
+            training: data[d]['training'],
+            fileTypes: data[d]['fileTypes'],
+            examples: data[d]['examples'],
 			license: data[d]['license']
 		}
-
+        
+        
 		statusTags = ( data[d]['functionality'] != '' ) ? data[d]['functionality'].split(', ') : [];
 		houseTags = ( data[d]['machine'] != '' ) ? data[d]['machine'].split(', ') : [];
 
-
-		if( minCharAppear == undefined){
-			minCharAppear = tools[ data[d]['name'] ]['appear'];
-
-		} else if( minCharAppear > tools[ data[d]['name'] ]['appear'] ){
-			minCharAppear = tools[ data[d]['name'] ]['appear'];
-		}
-
-		if( tools[ data[d]['name'] ]['appear'] > maxCharAppear ){
+        if( tools[ data[d]['name'] ]['appear'] > maxCharAppear ){
 			maxCharAppear = tools[ data[d]['name'] ]['appear'];
 		}
-
+        
 		if( statusTags.length > 0){
 			var includeCharDeath = false;
 			tools[ data[d]['name'] ]['numDeath'] = statusTags.length;
@@ -224,7 +203,7 @@ function processThrones(data){
 					}
 				}
 
-				chardeath_links.push({
+				toolMachine_links.push({
 					type: 'char-death-link',
 					source: tools[ data[d]['name'] ],
 					target: supportedSystem[w]
@@ -276,7 +255,7 @@ function processThrones(data){
 					}
 				}
 
-				charhouse_links.push({
+				toolFunctionality_links.push({
 					type: 'char-house-link',
 					source: tools[ data[d]['name'] ],
 					target: houses[h]
@@ -308,7 +287,7 @@ function processThrones(data){
 	}
 
 	for(var c in tools){
-		charRootNode.children.push(tools[c]);
+		toolRootNode.children.push(tools[c]);
 
 		if(tools[c]['numHouses'] > maxCharsToHouses){
 			maxCharsToHouses = tools[c]['numHouses'];
@@ -321,7 +300,7 @@ function processThrones(data){
 	}
 
 	for(var w in supportedSystem){
-		deathRootNode.children.push(supportedSystem[w]);
+		machineRootNode.children.push(supportedSystem[w]);
 
 		if(supportedSystem[w]['numChars'] > maxDeathToChars){
 			maxDeathToChars = supportedSystem[w]['numChars'];
@@ -329,7 +308,7 @@ function processThrones(data){
 	}
 
 	for(var h in houses){
-		houseRootNode.children.push(houses[h]);
+		functionalityRootNode.children.push(houses[h]);
 
 		if(houses[h]['numChars'] > maxHousesToChars){
 			maxHousesToChars = houses[h]['numChars'];
@@ -346,9 +325,9 @@ function processThrones(data){
 		maxCharHouses = maxHousesToChars;
 	}
 
-	map.children.push(charRootNode);
-	map.children.push(deathRootNode);
-	map.children.push(houseRootNode);
+	map.children.push(toolRootNode);
+	map.children.push(machineRootNode);
+	map.children.push(functionalityRootNode);
 
 	drawChart();
 
@@ -375,148 +354,6 @@ function processThrones(data){
 
 }
 
-var smallVis = {};
-
-function drawSmallChart(location, data, align, height){
-    var h = height,
-        w = 200,
-        barH = 25;
-
-    var startX = 0;
-    var startY = 1;
-
-    smallVis[data[0]['contentType']] = vis = d3.select("#" + location).append('svg')
-            .attr({
-                'height': h + 'px',
-                'width': w + 'px'
-            });
-
-    w = 150;
-
-    var bars = vis.selectAll(".bar")
-            .data(data)
-          .enter()
-            .append('g')
-            .attr('class', 'bar-group')
-            .attr('id', function(d){
-                    return 'bargroup-' + d.name.toLowerCase().replace(' ', '')
-            });
-
-    bars.append('rect')
-        .attr("x", function(d,i){
-            if(align == 'right'){
-                return w -barW(d.total) -30  //+ barX(data,i)
-            } else {
-                return startX +30 //+ barX(data,i)
-            }
-        })
-        .attr("y", function (d,i){
-            return startY + (barH + 1) * i
-        })
-        .attr("width", function(d){
-            return barW(d.total)
-        })
-        .attr("height", barH)
-        .attr('id', function(d){
-            return 'bar-' + d.name.toLowerCase().replace(' ', '')
-        })
-        .attr('class', 'bar')
-        .style('fill', function(d){
-
-            if(d.category == 'Desktop GIS'){
-					return '#5265AE'
-            } else if(d.category == 'Web-mapping tool'){
-					return '#8000FF';
-            } else if(d.category == 'Database with mapping functionality'){
-					return '#FF8000';
-            }  else if(d.contentType == 'tool'){
-                if(d.category == 'Application / Library / Visualization tool'){
-					return '#FFFF00';
-                }
-            } else if(d.contentType == 'functionality'){
-                    return '#5E843A';
-            } else if(d.contentType == 'machine'){
-                    return '#CC2F27'
-            }
-        })
-        .on("mouseover", function(d){
-
-            currentSelectionText = ''
-            showBarConnections(d);
-            console.log(d);
-
-        })
-        .on("mouseout", hideBarConnections);
-
-    bars.append('text')
-        .attr("class",'bar-label')
-        .attr("y", function(d,i){
-            var yPos = startY + ((barH + 1) * i) + 16
-            return yPos;
-        })
-        .attr("x", function(d,i){
-            if(align == 'right'){
-                    return w - barW(d.total) -35;
-            } else {
-                    return barW(d.total) +35;
-            }
-        })
-        .attr("text-anchor",function(d){
-            if(align == 'right'){
-                return 'end';
-            } else {
-                return 'start';
-            }
-        })
-        .text(function(d) {
-            var text = '';
-
-            if(d.contentType == 'functionality'){
-                if (d.name == 'Male') {
-                	text = 'Male';
-                } else {
-                	text = 'Female';
-                }
-            } else if(d.contentType == 'machine'){
-            	text = d.name;
-            }
-            return text;
-        });
-
-    bars.append('text')
-        .attr("class",'bar-label-pct')
-        .attr("y", function(d,i){
-            var yPos = startY + ((barH + 1) * i) + 16
-            return yPos;
-        })
-        .attr("x", function(d,i){
-            if(align == 'right'){
-                    return w
-            } else {
-                    return startX
-            }
-        })
-        .attr("text-anchor",function(d){
-            if(align == 'right'){
-                    return 'end'
-            } else {
-                    return 'start'
-            }
-        })
-        .text(function(d) {
-            var text = Math.round(d.total/totalTools * 100).toFixed(0) + '%'
-            return text;
-        });
-
-    function barX (data, pos){
-        var xPos = startX + barW(data[pos].total) + 5;
-        return xPos;
-    }
-
-    function barW(v){
-        return v/totalTools * w;
-    }
-}
 
 function color(val){
 	var color;
@@ -538,7 +375,7 @@ function drawChart(){
 	    .domain([10,10])
 	    .range([20,50]);
 
-	var gameBarScale = d3.scale.linear()
+	var toolBarScale = d3.scale.linear()
 	    .domain([0,maxCharAppear])
 	    .range([0,50]);
 
@@ -555,7 +392,7 @@ function drawChart(){
 	      .attr('height', 12)
 	      .attr('width', function(d){
 			if(d.nodeType == 'tool'){
-				return gameBarScale(d.appear)
+				return toolBarScale(d.appear)
 			} else {
 				return barScale(d.appear)
 			}})
@@ -576,7 +413,7 @@ function drawChart(){
 
 			var translatevalue = d.y + 5
 			if(d.nodeType == 'tool'){
-				translatevalue += gameBarScale(d.appear)
+				translatevalue += toolBarScale(d.appear)
 			} else {
 				translatevalue += barScale(d.appear)
 			}
@@ -640,7 +477,7 @@ function drawChart(){
 	    				.domain([0,maxCharHouses])
 	    				.range([0,1]);
 
-	var mergedLinks = chardeath_links.concat(charhouse_links);
+	var mergedLinks = toolMachine_links.concat(toolFunctionality_links);
 
 	svg.selectAll(".links")
 		.data(bundle(mergedLinks))
@@ -693,7 +530,7 @@ function setPopupPosition(e){
 	mouseX = e.pageX;
 	mouseY = e.pageY;
 
-	if(mouseY < $('#got-network').offset().top + $('#got-network').outerHeight()/2){
+	if(mouseY < $('#gis-network').offset().top + $('#gis-network').outerHeight()/2){
 		//bottom
 		mouseY -= $('#node-info').outerHeight() + 10;
 	} else {
@@ -701,7 +538,7 @@ function setPopupPosition(e){
 		 mouseY += 10;
 	}
 
-	if(mouseX < $('#got-network').offset().left + $('#got-network').outerWidth()/2 ){
+	if(mouseX < $('#gis-network').offset().left + $('#gis-network').outerWidth()/2 ){
 		//left side
 		mouseX -= $('#node-info').outerWidth() + 10;
 
@@ -722,7 +559,7 @@ function setPopupPosition(e){
 		mouseY = e.pageY - 20 - $('#node-info').outerHeight();
 	}
 
-	$('.got-popup').css({
+	$('.gis-popup').css({
 		top: mouseY,
 		left: mouseX
 	})
@@ -745,19 +582,6 @@ function showBarConnections(d) {
 		smallVis[s].selectAll('.bar')
 			.style('fill', '#eee')
 	}
-
-/*
-	smallVis[d['contentType']].select('#bar-' + d.name.toLowerCase().replace(' ', ''))
-		.style('fill', function(d){
-			if(d.contentType == 'tool'){
-				return '#FF0066';
-			} else if(d.contentType == 'functionality'){
-				return '#5E843A';
-			} else if(d.contentType == 'machine'){
-				return '#CC2F27';
-			}
-		})
-*/
 
 	svg.selectAll('.circle-text')
 		.classed('circle-text-dim', true);
@@ -838,29 +662,6 @@ function showBarConnections(d) {
 
 function hideBarConnections(d) {
 
-	for(var s in smallVis){
-
-		smallVis[s].selectAll('.bar')
-			.style('fill', function(d){
-				if(d.category == 'Desktop GIS'){
-					return '#5265AE'
-				} else if(d.category == 'Web-mapping tool'){
-					return '#8000FF';
-                } else if(d.category == 'Database with mapping functionality'){
-					return '#FF8000';
-                }  else if(d.contentType == 'tool'){
-                    if(d.category == 'Application / Library / Visualization tool'){
-					return '#FF0066';
-                    }
-                } else if(d.contentType == 'functionality'){
-					return '#5E843A';
-				} else if(d.contentType == 'machine'){
-					return '#CC2F27';
-				}
-
-			})
-	}
-
 	svg.selectAll('.node-dot')
 		.style('opacity', 1)
 
@@ -911,23 +712,37 @@ function showConnections(d) {
 	$("#node-info").empty();
 
 	if(d.nodeType == 'tool'){
-		$("#charTemplate").tmpl( {
+		$("#toolDetails").tmpl( {
 			name: d.name,
             category: d.category,
 			color: getSupportColor(d.toolSupport),
 			imagesrc: d.image,
 			episodes: d.appear,
 			support: d.toolSupport,
-			season: d.seasons,
+			access: d.access,
             website: d.website,
+            training: d.training,
+            fileTypes: d.fileTypes,
+            examples: d.examples,
 			license: d.license,
 			learningCurve: d.learningCurve
 		}).appendTo( "#node-info" );
         
-       /* $("charTemplate").on('click',function(){
+    /*    $("#linkWebsite").on('click',function(){
             window.location.href("www.facebook.com");
         });
+    for
 */
+      /*  window.location.hash = '#node-info';*/
+        
+      /*  document.getElementById('toolDetails').scrollIntoView();*/
+        
+ /*       $(document).ready(function(){
+    $("#linkWebsite").click(function(){
+        window.location.href("facebook.com");
+    });
+});
+    */    
 		var supportedSystem = (d.supportedSystem.length > 0)? d.supportedSystem: ['None'];
 		$.each(supportedSystem, function(i, w){
 			$("#listTemplate").tmpl( {item: w}).appendTo( "#node-death-references .node-data" );
@@ -938,9 +753,9 @@ function showConnections(d) {
 			$("#listTemplate").tmpl( {item: t}).appendTo( "#node-house-references .node-data" );
 		})
 
-		var seasons = (d.seasons.length > 0)? d.seasons: ['None'];
-		$.each(seasons, function(i, s){
-			$("#listTemplate").tmpl( {item: s}).appendTo( "#node-season-references .node-data" );
+		var access = (d.access.length > 0)? d.access: ['None'];
+		$.each(access, function(i, s){
+			$("#listTemplate").tmpl( {item: s}).appendTo( "#node-access-references .node-data" );
 		})
 	    $("#node-info").show();
     }else{
@@ -996,9 +811,8 @@ function getSupportColor(support){
 	return color;
 }
 
-function getToolColor(category, value){
+function getToolColor(category, value){ //this is used
     var color = '#ccc'
-    console.log(category);
     if(category == 'Desktop GIS'){
         if( value <= 1){
             color = '#ffd699';
@@ -1055,27 +869,8 @@ function getToolColor(category, value){
 function getColor(type, value){
 	var color = '#ccc'
     if(type == 'functionality'){
-        /*
-		if( value <= 1){
-			color = '#9DB270';
-		} else if( value > 1 && value <= 5){
-			color = '#5E843A';
-		} else if( value > 5 && value <= 10){
-			color = '#3C602E';
-		} else if( value > 10 && value <= 15){
-			color = '#1E3B13';
-		} else if( value > 15 ){
-			color = '#2F4F2F';
-		}*/
         color = '#d9d9d9';
 	} else if(type == 'machine'){
-		/*if( value <= 1){
-			color = '#E88B78';
-		} else if( value == 2){
-			color = '#CC2F27';
-		} else if( value > 2){
-			color = '#871D1B';
-		}*/
         color = '#ffffcc';
 	}
 	return color;
