@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title> NYU DS GIS Tools</title>
 
-	<script type="text/javascript" src="http://ff.kis.scr.kaspersky-labs.com/1B74BD89-2A22-4B93-B451-1C9E1052A0EC/main.js" charset="UTF-8"></script><script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script src="jquery.tmpl.min.js"></script>
     <link rel="stylesheet" type="text/css" href="main.css">
@@ -57,11 +57,15 @@
 <body>
 
 <div class='wrap'>
-	<div class='row' id='circle-chart-container'>
-
+        <div class="key" style="float: left; border: 2px snow solid;">  
+            <h5>KEY</h5>
+            <h6><FONT COLOR="#ffb366">▇  </FONT>: Desktop GIS</h6>
+            <h6><FONT COLOR="#3366ff">▇  </FONT>: Web-mapping tool</h6>
+            <h6><FONT COLOR="#993366">▇  </FONT>: Database with mapping functionality</h6>
+            <h6><FONT COLOR="#339966">▇  </FONT>: Application / Library / Visualization tool</h6>
+            <h6>* Thickness of bar corresponds to usage popularity of the tool</h6>
+        </div>
 		<div class='col-12' id='gis-network'></div>
-	</div>
-
 </div>
 
 <div id='node-info' class='gis-popup'></div>
@@ -91,7 +95,7 @@ var svg = d3.select("#gis-network").append("svg")
     .attr("width", circle)
     .attr("height", diameter+240)
   .append("g")
-    .attr("transform", "translate(" + (radius + 75) + "," + (radius + 20) + ")");
+    .attr("transform", "translate(" + (radius - 90) + "," + (radius + 30) + ")");
 
 var svgDefs = svg.append("svg:defs");
 
@@ -103,16 +107,17 @@ var line = d3.svg.line.radial()
 
 // Cleaned GIS tools Data
 var dataSource = 'gis_dsTools.csv';  
+    
 
-var maxCharToDeath = 0,
-	maxDeathToChars = 0,
-	maxCharsToHouses = 0,
-	maxHousesToChars = 0,
+var maxToolsToMachine = 0,
+	maxMachineToTools = 0,
+	maxToolsToFeatures = 0,
+	maxFeaturesToTools = 0,
 	maxCharDeath = 0,
 	maxCharAppear = 0,
 	minCharAppear = undefined,
-	totalTools = 30;  // Number of tools. Always update it in case of changes, else it won't show on the viz
-
+	totalTools = 0;
+    
 var gradientCounter = 0,
 	toolSupport = {},
 	charAlive = [],
@@ -123,6 +128,7 @@ var gradientCounter = 0,
 // Main data processing
 d3.csv(dataSource, function (error, rows) {
 	data = rows;
+    totalTools = data.length;
 	processTools(data);
 });
 
@@ -289,12 +295,12 @@ function processTools(data){
 	for(var c in tools){
 		toolRootNode.children.push(tools[c]);
 
-		if(tools[c]['numHouses'] > maxCharsToHouses){
-			maxCharsToHouses = tools[c]['numHouses'];
+		if(tools[c]['numHouses'] > maxToolsToFeatures){
+			maxToolsToFeatures = tools[c]['numHouses'];
 		}
 
-		if(tools[c]['numDeath'] > maxCharToDeath){
-			maxCharToDeath = tools[c]['numDeath'];
+		if(tools[c]['numDeath'] > maxToolsToMachine){
+			maxToolsToMachine = tools[c]['numDeath'];
 		}
 
 	}
@@ -302,27 +308,27 @@ function processTools(data){
 	for(var w in supportedSystem){
 		machineRootNode.children.push(supportedSystem[w]);
 
-		if(supportedSystem[w]['numChars'] > maxDeathToChars){
-			maxDeathToChars = supportedSystem[w]['numChars'];
+		if(supportedSystem[w]['numChars'] > maxMachineToTools){
+			maxMachineToTools = supportedSystem[w]['numChars'];
 		}
 	}
 
 	for(var h in houses){
 		functionalityRootNode.children.push(houses[h]);
 
-		if(houses[h]['numChars'] > maxHousesToChars){
-			maxHousesToChars = houses[h]['numChars'];
+		if(houses[h]['numChars'] > maxToolsToFeatures){
+			maxToolsToFeatures = houses[h]['numChars'];
 		}
 	}
 
-	maxCharDeath = maxCharToDeath;
-	if( maxDeathToChars > maxCharToDeath){
-		maxCharDeath = maxDeathToChars;
+	maxCharDeath = maxToolsToMachine;
+	if( maxMachineToTools > maxToolsToMachine){
+		maxCharDeath = maxMachineToTools;
 	}
 
-	maxCharHouses = maxCharsToHouses;
-	if( maxHousesToChars > maxCharHouses){
-		maxCharHouses = maxHousesToChars;
+	maxCharHouses = maxToolsToFeatures;
+	if( maxToolsToFeatures > maxCharHouses){
+		maxCharHouses = maxToolsToFeatures;
 	}
 
 	map.children.push(toolRootNode);
