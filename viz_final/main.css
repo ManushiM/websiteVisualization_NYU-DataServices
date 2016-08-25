@@ -33,16 +33,20 @@ p {
 	color: #666;
 }
 
-img {
-	display: block;
-	max-width: 170px;
-	max-height: 60px;
-	width: auto;
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 10px;
+.node-label {
+    text-align: right;
+   /* overflow:auto;
+    white-space: nowrap;*/
+  /*  padding: 2px;*/
 }
 
+.node-data-color {
+    margin-left: 2px;
+}
+
+.node-data {
+    text-align: left;
+}
 
 #source {
 	font-size: 10px;
@@ -96,7 +100,7 @@ img {
 }
 
 #node-info {
-	width: 175px;
+	width: 220px;
 }
 
 .node-char {
