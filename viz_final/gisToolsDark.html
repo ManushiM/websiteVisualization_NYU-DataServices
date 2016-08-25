@@ -15,24 +15,24 @@
 			<img src="${imagesrc}" alt="Not Available" width="50" height="50">
 		</div>
 		<div class='node-char' id='node-char-appearance'>
-			<div class='node-label'>Data Services Support</div>
+			<div class='node-label'>Data Services Support : </div>
 			<div class='node-data-color' style='background-color: ${color};'></div>
-			<div class='node-data-short'>${support}</div>
+			<div class='node-data-short'> ${support}</div>
 		</div>
         <div class='node-char' id='node-category'>
-			<div class='node-label'>Tool Type</div>
+			<div class='node-label'>Tool Type : </div>
 			<div class='node-data'>${category}</div>
 		</div>
 		<div class='node-char' id='node-access-references'>
-			<div class='node-label'>Access at NYU</div>
+			<div class='node-label'>Access at NYU : </div>
 			<div class='node-data'></div>
 		</div>
 		<div class='node-char' id='node-license'>
-			<div class='node-label'>License</div>
-			<div class='node-data'>${license}</div>
+			<div class='node-label'>License : </div>
+			<div class='node-data'> ${license}</div>
 		</div>
         <div class='node-char' id='node-learningCurve'>
-			<div class='node-label'>Learning Curve</div>
+			<div class='node-label'>Learning Curve : </div>
 			<div class='node-data'>${learningCurve}</div>
 		</div>
         <div class='node-char' id='node-outlinks'>
@@ -62,7 +62,7 @@
             <h6><FONT COLOR="#ffb366">▇  </FONT>: Desktop GIS</h6>
             <h6><FONT COLOR="#3366ff">▇  </FONT>: Web-mapping tool</h6>
             <h6><FONT COLOR="#993366">▇  </FONT>: Database with mapping functionality</h6>
-            <h6><FONT COLOR="#339966">▇  </FONT>: Application / Library / Visualization tool</h6>
+            <h6><FONT COLOR="#339966">▇  </FONT>: Mapping Application / Visualization tool</h6>
             <h6>* Thickness of bar corresponds to usage popularity of the tool</h6>
         </div>
 		<div class='col-12' id='gis-network'></div>
@@ -113,7 +113,7 @@ var maxToolsToMachine = 0,
 	maxMachineToTools = 0,
 	maxToolsToFeatures = 0,
 	maxFeaturesToTools = 0,
-	maxCharDeath = 0,
+	maxToolMachine = 0,
 	maxCharAppear = 0,
 	minCharAppear = undefined,
 	totalTools = 0;
@@ -226,14 +226,6 @@ function processTools(data){
 
 			})
 
-			if(includeCharDeath){
-
-
-			} else {
-				charFemale.push(tools[ data[d]['name'] ]);
-				tools[ data[d]['name'] ]['genderLink']  = 'female';
-			}
-
 		} else {
 			charFemale.push(tools[ data[d]['name'] ]);
 			tools[ data[d]['name'] ]['genderLink']  = 'female';
@@ -321,14 +313,14 @@ function processTools(data){
 		}
 	}
 
-	maxCharDeath = maxToolsToMachine;
+	maxToolMachine = maxToolsToMachine;
 	if( maxMachineToTools > maxToolsToMachine){
-		maxCharDeath = maxMachineToTools;
+		maxToolMachine = maxMachineToTools;
 	}
 
-	maxCharHouses = maxToolsToFeatures;
-	if( maxToolsToFeatures > maxCharHouses){
-		maxCharHouses = maxToolsToFeatures;
+	maxToolFeature = maxToolsToFeatures;
+	if( maxToolsToFeatures > maxToolFeature){
+		maxToolFeature = maxToolsToFeatures;
 	}
 
 	map.children.push(toolRootNode);
@@ -341,22 +333,6 @@ function processTools(data){
 	for(var k in toolSupport){
 		toolSupport[k].contentType = 'support';
 	}
-
-	var genderArray = [
-		{
-			name: 'Male',
-			total: charMale.length,
-			contentType: 'functionality',
-			data: charMale
-		},
-		{
-			name: 'Female',
-			total: totalTools - charMale.length,
-			contentType: 'functionality',
-			data: charFemale
-		},
-
-	];
 
 }
 
@@ -448,7 +424,7 @@ function drawChart(){
 
 				return bClass;
 	      })
-		  .style('fill', function(d){ //this is here it shows
+		  .style('fill', function(d){ //this is where it shows
 		  			if(d.nodeType == 'tool'){
                         if(d.category == 'Desktop GIS'){
 					       return '#ffb366';
@@ -471,17 +447,6 @@ function drawChart(){
 	$('.node').mousemove(setPopupPosition);
 	$('.node-dot').mousemove(setPopupPosition);
 
-	charDeathColor = d3.interpolateRgb("#ccc", '#2C3878');
-
-	charDeathScale = d3.scale.linear()
-	    				.domain([0,maxCharDeath])
-	    				.range([0,1]);
-
-	charHouseColor = d3.interpolateRgb("#ccc", '#3C602E');
-
-	charHouseScale = d3.scale.linear()
-	    				.domain([0,maxCharHouses])
-	    				.range([0,1]);
 
 	var mergedLinks = toolMachine_links.concat(toolFunctionality_links);
 
@@ -581,8 +546,6 @@ function showBarConnections(d) {
 	}
 
 	currentSelection = d;
-	$(currentSelectionBtn).addClass('got-button-selected')
-	$(currentSelectionBtn).text('Show all characters')
 
 	for(var s in smallVis){
 		smallVis[s].selectAll('.bar')
@@ -593,33 +556,6 @@ function showBarConnections(d) {
 		.classed('circle-text-dim', true);
 	svg.selectAll('path.links')
 		.style("stroke-opacity", .01)
-
-	if (d.name == 'Deceased') {
-		svg.selectAll('.btext-violence')
-			.classed('highlight', true)
-			.classed('circle-text-dim', false);
-	} else {
-		svg.selectAll('.btext-' + d.name.toLowerCase().replace(' ', ''))
-			.classed('highlight', true)
-			.classed('circle-text-dim', false);
-		if (d.contentType != 'machine') {
-			if (d.name == 'Male') {
-			var hArray = ['stark', 'tyrell', 'freefolk'];
-			hArray.forEach(function (h) {
-				svg.selectAll('#nodetext-' + h)
-					.classed('highlight', true)
-					.classed('circle-text-dim', false);
-			});
-			} else if (d.name = 'Female') {
-				var hArray = ['baratheon', 'lannister', 'kingsguard', 'targaryen', 'freefolk', 'self', 'baelish'];
-				hArray.forEach(function (h) {
-					svg.selectAll('#nodetext-' + h)
-						.classed('highlight', true)
-						.classed('circle-text-dim', false);
-				});
-			}
-		}
-	}
 
 	svg.selectAll('.node-dot')
 		.style('opacity', .01);
@@ -734,21 +670,6 @@ function showConnections(d) {
 			learningCurve: d.learningCurve
 		}).appendTo( "#node-info" );
         
-    /*    $("#linkWebsite").on('click',function(){
-            window.location.href("www.facebook.com");
-        });
-    for
-*/
-      /*  window.location.hash = '#node-info';*/
-        
-      /*  document.getElementById('toolDetails').scrollIntoView();*/
-        
- /*       $(document).ready(function(){
-    $("#linkWebsite").click(function(){
-        window.location.href("facebook.com");
-    });
-});
-    */    
 		var supportedSystem = (d.supportedSystem.length > 0)? d.supportedSystem: ['None'];
 		$.each(supportedSystem, function(i, w){
 			$("#listTemplate").tmpl( {item: w}).appendTo( "#node-death-references .node-data" );
