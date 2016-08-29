@@ -12,7 +12,7 @@
 		<div id='node-name' tabindex="0">${name}</div>
 
 		<div class='node-char' id='node-image-references'>
-			<img src="${imagesrc}" alt="Not Available" width="50" height="50">
+			<img src="${imagesrc}" alt="Not Available" width="95" height="65">
 		</div>
 		<div class='node-char' id='node-char-appearance'>
 			<div class='node-label'>Data Services Support : </div>
@@ -63,6 +63,8 @@
             <h6><FONT COLOR="#3366ff">▇  </FONT>: Web-mapping tool</h6>
             <h6><FONT COLOR="#993366">▇  </FONT>: Database with mapping functionality</h6>
             <h6><FONT COLOR="#339966">▇  </FONT>: Mapping Application / Visualization tool</h6>
+            <h6><FONT COLOR="#a6a6a6">▇  </FONT>: Supported Functionality</h6>
+            <h6><FONT COLOR="#336600">▇  </FONT>: Supporting Operating systems</h6>
             <h6>* Thickness of bar corresponds to usage popularity of the tool</h6>
         </div>
 		<div class='col-12' id='gis-network'></div>
@@ -436,9 +438,9 @@ function drawChart(){
 					       return '#339966';
                     }
 					} else if(d.nodeType == 'functionality' ) {
-						return '#d9d9d9';
+						return '#a6a6a6';
 					} else if( d.nodeType == 'machine'){
-						return '#ffffcc';
+						return '#88cc00';
 					}
 		  	   })
 	      .on("mouseover", showConnections)
@@ -796,9 +798,9 @@ function getToolColor(category, value){ //this is used
 function getColor(type, value){
 	var color = '#ccc'
     if(type == 'functionality'){
-        color = '#d9d9d9';
+        color = '#a6a6a6';
 	} else if(type == 'machine'){
-        color = '#ffffcc';
+        color = '#336600';
 	}
 	return color;
 }
